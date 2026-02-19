@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soluciones – Matemática Computacional</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;700&family=Sora:wght@300;600;800&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#0d0f14;
+    --card:#13161e;
+    --border:#1e2330;
+    --accent:#4fffb0;
+    --accent2:#ff6b6b;
+    --accent3:#64b5f6;
+    --accent4:#ffcc02;
+    --text:#e8eaf0;
+    --muted:#7a8099;
+    --mono:'JetBrains Mono',monospace;
+    --sans:'Sora',sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--text);font-family:var(--sans);min-height:100vh;padding:2rem 1rem}
+  .page{max-width:900px;margin:0 auto}
+  /* HEADER */
+  header{text-align:center;padding:3rem 0 2rem;border-bottom:1px solid var(--border)}
+  header h1{font-size:clamp(1.6rem,4vw,2.4rem);font-weight:800;letter-spacing:-0.03em;
+    background:linear-gradient(135deg,var(--accent),var(--accent3));
+    -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+  header p{color:var(--muted);font-size:.9rem;margin-top:.5rem;font-weight:300}
+  .badge{display:inline-block;background:var(--accent);color:#000;
+    font-family:var(--mono);font-size:.7rem;font-weight:700;
+    padding:.25rem .6rem;border-radius:3px;margin-top:.75rem}
+
+  /* EXERCISE CARD */
+  .ex{background:var(--card);border:1px solid var(--border);border-radius:12px;
+      margin:2rem 0;overflow:hidden}
+  .ex-header{padding:1.2rem 1.5rem;border-bottom:1px solid var(--border);
+              display:flex;align-items:center;gap:1rem}
+  .ex-num{width:36px;height:36px;border-radius:6px;display:flex;align-items:center;
+          justify-content:center;font-family:var(--mono);font-weight:700;font-size:.85rem;flex-shrink:0}
+  .ex-num.e1{background:rgba(78,255,176,.15);color:var(--accent);border:1px solid var(--accent)}
+  .ex-num.e2{background:rgba(100,181,246,.15);color:var(--accent3);border:1px solid var(--accent3)}
+  .ex-num.e3{background:rgba(255,204,2,.15);color:var(--accent4);border:1px solid var(--accent4)}
+  .ex-title{font-size:1rem;font-weight:600}
+  .ex-pct{margin-left:auto;font-family:var(--mono);font-size:.75rem;color:var(--muted);
+          background:rgba(255,255,255,.05);padding:.2rem .6rem;border-radius:20px}
+  .ex-body{padding:1.5rem}
+
+  /* FORMULA BOX */
+  .formula{background:#0a0c12;border-left:3px solid var(--accent);
+           border-radius:0 8px 8px 0;padding:1rem 1.2rem;
+           font-family:var(--mono);font-size:1rem;color:var(--accent);
+           margin:1rem 0;letter-spacing:.03em}
+  .formula.blue{border-color:var(--accent3);color:var(--accent3)}
+  .formula.yellow{border-color:var(--accent4);color:var(--accent4)}
+
+  /* STEPS */
+  .step{margin:1.2rem 0}
+  .step-label{display:inline-flex;align-items:center;gap:.4rem;
+              font-family:var(--mono);font-size:.75rem;font-weight:700;
+              color:#000;background:var(--accent);padding:.2rem .55rem;
+              border-radius:4px;margin-bottom:.6rem}
+  .step-label.blue{background:var(--accent3)}
+  .step-label.yellow{background:var(--accent4)}
+  .step-content{font-size:.92rem;line-height:1.7;color:var(--text)}
+  .step-content code{font-family:var(--mono);background:rgba(255,255,255,.07);
+                     padding:.15rem .4rem;border-radius:3px;font-size:.85em}
+
+  /* TRUTH TABLE */
+  .tbl-wrap{overflow-x:auto;margin:1rem 0}
+  table{border-collapse:collapse;width:100%;font-family:var(--mono);font-size:.82rem}
+  th{background:#0a0c12;color:var(--muted);padding:.6rem .8rem;
+     text-align:center;border:1px solid var(--border);white-space:nowrap}
+  th.main{color:var(--accent)}
+  td{padding:.55rem .8rem;text-align:center;border:1px solid var(--border);white-space:nowrap}
+  tr:hover td{background:rgba(255,255,255,.03)}
+  td.v{color:var(--accent);font-weight:700}
+  td.f{color:var(--accent2);font-weight:700}
+  td.result{background:rgba(78,255,176,.06)}
+  td.result.f{background:rgba(255,107,107,.06)}
+  tr.highlight td{background:rgba(78,255,176,.08)}
+
+  /* SUBSTITUTION BOX */
+  .subst{background:#0a0c12;border-radius:8px;padding:1.2rem 1.4rem;
+         margin:.8rem 0;border:1px solid var(--border)}
+  .subst .line{display:flex;gap:.5rem;align-items:baseline;
+               font-family:var(--mono);font-size:.88rem;margin:.3rem 0;
+               flex-wrap:wrap}
+  .subst .eq{color:var(--muted);margin:0 .25rem}
+  .subst .val{color:var(--accent);font-weight:700}
+  .subst .val.f{color:var(--accent2)}
+  .subst .label{color:var(--muted);font-size:.78rem;min-width:220px}
+
+  /* RESULT BOX */
+  .result-box{border-radius:8px;padding:1rem 1.3rem;margin:1rem 0;
+              display:flex;align-items:center;gap:.75rem;font-weight:600}
+  .result-box.ok{background:rgba(78,255,176,.1);border:1px solid var(--accent);color:var(--accent)}
+  .result-box.no{background:rgba(255,107,107,.1);border:1px solid var(--accent2);color:var(--accent2)}
+  .result-box .icon{font-size:1.3rem}
+
+  /* CIRCUIT DIAGRAM */
+  .circuit{background:#0a0c12;border-radius:10px;padding:1.5rem;
+           margin:1rem 0;border:1px solid var(--border);overflow-x:auto}
+  .circuit svg{display:block;min-width:500px}
+
+  /* CLASSIFICATION */
+  .classif{display:flex;flex-wrap:wrap;gap:.6rem;margin:.8rem 0}
+  .chip{font-family:var(--mono);font-size:.75rem;padding:.3rem .7rem;border-radius:20px}
+  .chip.taut{background:rgba(78,255,176,.15);border:1px solid var(--accent);color:var(--accent)}
+  .chip.cont{background:rgba(255,204,2,.15);border:1px solid var(--accent4);color:var(--accent4)}
+  .chip.contra{background:rgba(255,107,107,.15);border:1px solid var(--accent2);color:var(--accent2)}
+
+  .divider{height:1px;background:var(--border);margin:1.5rem 0}
+  .sub-ex{margin-bottom:2rem}
+  .sub-ex-title{font-size:.88rem;color:var(--muted);font-family:var(--mono);
+                margin-bottom:.8rem;padding:.4rem .8rem;background:rgba(255,255,255,.04);
+                border-radius:5px;display:inline-block}
+
+  /* STEP TABLE for boolean sub-expressions */
+  .substeps{background:#080a0e;border-radius:8px;padding:1rem 1.2rem;margin:.8rem 0;
+            border:1px solid var(--border)}
+  .substeps h4{font-size:.78rem;color:var(--muted);font-family:var(--mono);
+               margin-bottom:.7rem;text-transform:uppercase;letter-spacing:.05em}
+  .substep-list{list-style:none}
+  .substep-list li{font-family:var(--mono);font-size:.83rem;padding:.25rem 0;
+                   color:var(--text);border-bottom:1px dashed rgba(255,255,255,.05)}
+  .substep-list li:last-child{border:none}
+  .substep-list .arrow{color:var(--accent3);margin:0 .4rem}
+
+  /* conditions box */
+  .conditions{background:rgba(78,255,176,.05);border:1px solid rgba(78,255,176,.3);
+              border-radius:8px;padding:1rem 1.3rem;margin:1rem 0}
+  .conditions h4{color:var(--accent);font-size:.85rem;font-family:var(--mono);
+                 margin-bottom:.6rem;text-transform:uppercase;letter-spacing:.05em}
+  .conditions ul{list-style:none;padding:0}
+  .conditions li{font-family:var(--mono);font-size:.85rem;padding:.25rem 0;
+                  color:var(--text)}
+  .conditions li span{color:var(--accent4)}
+</style>
+</head>
+<body>
+<div class="page">
+
+<header>
+  <h1>Soluciones Completas</h1>
+  <p>Matemática Computacional · Bloque 1 · Cálculo Proposicional y Álgebra Booleana</p>
+  <span class="badge">PASO A PASO · SIN OMISIONES</span>
+</header>
+
+<!-- ═══════════════════════════════════════════════════════
+     EJERCICIO 1  (30%)
+═══════════════════════════════════════════════════════ -->
+<div class="ex">
+  <div class="ex-header">
+    <div class="ex-num e1">E1</div>
+    <div class="ex-title">¿Bajo qué condiciones son verdaderas p y q?</div>
+    <div class="ex-pct">30 %</div>
+  </div>
+  <div class="ex-body">
+
+    <div class="formula">[ (q ↔ p) ∧ p ] → (p ∧ ¬q)</div>
+
+    <!-- PASO 1 -->
+    <div class="step">
+      <div class="step-label">PASO 1 — Colocar en orden todas las sub-expresiones</div>
+      <div class="step-content">
+        Identificamos cada sub-expresión de la proposición compuesta, de menor a mayor complejidad,
+        como se hace en álgebra con cada término:
+      </div>
+      <div class="substeps">
+        <h4>Sub-expresiones en orden</h4>
+        <ul class="substep-list">
+          <li>1. <code>p</code></li>
+          <li>2. <code>q</code></li>
+          <li>3. <code>¬q</code></li>
+          <li>4. <code>q ↔ p</code></li>
+          <li>5. <code>(q ↔ p) ∧ p</code></li>
+          <li>6. <code>p ∧ ¬q</code></li>
+          <li>7. <code>[ (q ↔ p) ∧ p ] → (p ∧ ¬q)</code> ← expresión final</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- PASO 2 -->
+    <div class="step">
+      <div class="step-label">PASO 2 — Número de filas</div>
+      <div class="step-content">
+        n = número de proposiciones simples = <strong>2</strong> (p y q)<br>
+        Número de filas = 2<sup>n</sup> = 2<sup>2</sup> = <strong>4 filas</strong>
+      </div>
+    </div>
+
+    <!-- PASO 3 -->
+    <div class="step">
+      <div class="step-label">PASO 3 — Construir la tabla de verdad</div>
+      <div class="step-content">
+        Reglas usadas:<br>
+        • <code>p ↔ q</code>: V solo cuando ambas tienen el <strong>mismo</strong> valor de verdad.<br>
+        • <code>p ∧ q</code>: V solo cuando <strong>ambas</strong> son V.<br>
+        • <code>p → q</code>: F solo cuando <strong>antecedente=V y consecuente=F</strong>.<br>
+        • <code>¬q</code>: invierte el valor de q.
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>p</th>
+              <th>q</th>
+              <th>¬q</th>
+              <th>q ↔ p</th>
+              <th>(q↔p) ∧ p</th>
+              <th>p ∧ ¬q</th>
+              <th class="main">[(q↔p)∧p] → (p∧¬q)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="v">V</td><td class="v">V</td>
+              <td class="f">F</td>
+              <td class="v">V</td>
+              <td class="v">V</td>
+              <td class="f">F</td>
+              <td class="f result f">F</td>
+            </tr>
+            <tr class="highlight">
+              <td class="v">V</td><td class="f">F</td>
+              <td class="v">V</td>
+              <td class="f">F</td>
+              <td class="f">F</td>
+              <td class="v">V</td>
+              <td class="v result">V</td>
+            </tr>
+            <tr class="highlight">
+              <td class="f">F</td><td class="v">V</td>
+              <td class="f">F</td>
+              <td class="f">F</td>
+              <td class="f">F</td>
+              <td class="f">F</td>
+              <td class="v result">V</td>
+            </tr>
+            <tr class="highlight">
+              <td class="f">F</td><td class="f">F</td>
+              <td class="v">V</td>
+              <td class="v">V</td>
+              <td class="f">F</td>
+              <td class="f">F</td>
+              <td class="v result">V</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- CLASIFICACIÓN -->
+    <div class="step">
+      <div class="step-label">CLASIFICACIÓN</div>
+      <div class="classif">
+        <span class="chip cont">✦ Contingencia (hay V y F)</span>
+      </div>
+    </div>
+
+    <!-- RESPUESTA -->
+    <div class="conditions">
+      <h4>✅ Condiciones para que la proposición sea VERDADERA</h4>
+      <ul>
+        <li><span>Fila 2:</span> p = V, q = F</li>
+        <li><span>Fila 3:</span> p = F, q = V</li>
+        <li><span>Fila 4:</span> p = F, q = F</li>
+      </ul>
+    </div>
+    <div style="background:rgba(255,107,107,.08);border:1px solid rgba(255,107,107,.3);border-radius:8px;padding:1rem 1.3rem;margin:1rem 0">
+      <h4 style="color:var(--accent2);font-size:.85rem;font-family:var(--mono);margin-bottom:.4rem;text-transform:uppercase">⚠ La proposición es FALSA únicamente cuando</h4>
+      <p style="font-family:var(--mono);font-size:.85rem">Fila 1: p = V <strong>y</strong> q = V</p>
+      <p style="font-family:var(--mono);font-size:.82rem;color:var(--muted);margin-top:.3rem">
+        Explicación: el antecedente (q↔p)∧p = V∧V = V, y el consecuente p∧¬q = V∧F = F.<br>
+        Como V → F = F, la condicional falla solo en ese caso.
+      </p>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     EJERCICIO 2  (30%)
+═══════════════════════════════════════════════════════ -->
+<div class="ex">
+  <div class="ex-header">
+    <div class="ex-num e2">E2</div>
+    <div class="ex-title">Valor de expresiones booleanas por sustitución</div>
+    <div class="ex-pct">30 %</div>
+  </div>
+  <div class="ex-body">
+
+    <div class="step">
+      <div class="step-label blue">DATOS</div>
+      <div class="step-content">
+        x₁ = <strong>0</strong> &nbsp;|&nbsp; x₂ = <strong>1</strong> &nbsp;|&nbsp; x₃ = <strong>0</strong>
+      </div>
+    </div>
+
+    <!-- 2a -->
+    <div class="sub-ex">
+      <div class="sub-ex-title">Expresión a) &nbsp; x̄₁ ∨ ( x̄₂ ∧ x₃ )</div>
+
+      <div class="formula blue">x̄₁ ∨ ( x̄₂ ∧ x₃ )</div>
+
+      <div class="step">
+        <div class="step-label blue">PASO 1 — Calcular los complementos (NOT)</div>
+        <div class="subst">
+          <div class="line"><span class="label">x₁ = 0 &nbsp;→&nbsp; x̄₁ = ¬(0) =</span><span class="val">1</span></div>
+          <div class="line"><span class="label">x₂ = 1 &nbsp;→&nbsp; x̄₂ = ¬(1) =</span><span class="val f">0</span></div>
+          <div class="line"><span class="label">x₃ = 0 &nbsp;→&nbsp; sin cambio =</span><span class="val f">0</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label blue">PASO 2 — Resolver el paréntesis interior (AND primero)</div>
+        <div class="subst">
+          <div class="line">
+            <span class="label">x̄₂ ∧ x₃ &nbsp;=&nbsp; 0 ∧ 0 &nbsp;=&nbsp;</span><span class="val f">0</span>
+            <span style="color:var(--muted);font-size:.78rem">&nbsp;(AND: F solo cuando hay al menos un 0)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label blue">PASO 3 — Resolver el OR final</div>
+        <div class="subst">
+          <div class="line">
+            <span class="label">x̄₁ ∨ ( x̄₂ ∧ x₃ ) &nbsp;=&nbsp; 1 ∨ 0 &nbsp;=&nbsp;</span><span class="val">1</span>
+            <span style="color:var(--muted);font-size:.78rem">&nbsp;(OR: V cuando al menos uno es 1)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-box ok"><span class="icon">✔</span> Resultado: <code style="font-family:var(--mono)">x̄₁ ∨ (x̄₂ ∧ x₃) = <strong>1</strong> (VERDADERO)</code></div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 2b -->
+    <div class="sub-ex">
+      <div class="sub-ex-title">Expresión b) &nbsp; ( x₁ ∧ x̄₂ ) ∧ <span style="text-decoration:overline">(x₁ ∨ x̄₃)</span></div>
+
+      <div class="formula blue">( x₁ ∧ x̄₂ ) ∧ ‾(x₁ ∨ x̄₃)</div>
+
+      <div class="step">
+        <div class="step-label blue">PASO 1 — Calcular los complementos (NOT)</div>
+        <div class="subst">
+          <div class="line"><span class="label">x₁ = 0 &nbsp;→&nbsp; sin complemento (se usa directo) =</span><span class="val f">0</span></div>
+          <div class="line"><span class="label">x₂ = 1 &nbsp;→&nbsp; x̄₂ = ¬(1) =</span><span class="val f">0</span></div>
+          <div class="line"><span class="label">x₃ = 0 &nbsp;→&nbsp; x̄₃ = ¬(0) =</span><span class="val">1</span></div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label blue">PASO 2 — Resolver el primer paréntesis (AND)</div>
+        <div class="subst">
+          <div class="line">
+            <span class="label">x₁ ∧ x̄₂ &nbsp;=&nbsp; 0 ∧ 0 &nbsp;=&nbsp;</span><span class="val f">0</span>
+            <span style="color:var(--muted);font-size:.78rem">&nbsp;(AND: ambos deben ser 1 para dar 1)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label blue">PASO 3 — Resolver el interior del segundo paréntesis (OR)</div>
+        <div class="subst">
+          <div class="line">
+            <span class="label">x₁ ∨ x̄₃ &nbsp;=&nbsp; 0 ∨ 1 &nbsp;=&nbsp;</span><span class="val">1</span>
+            <span style="color:var(--muted);font-size:.78rem">&nbsp;(OR: al menos un 1, resultado 1)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label blue">PASO 4 — Aplicar la barra de negación sobre todo el paréntesis: ‾(x̄₁ ∨ x̄₃)</div>
+        <div class="subst">
+          <div class="line">
+            <span class="label">‾(x₁ ∨ x̄₃) &nbsp;=&nbsp; ¬(1) &nbsp;=&nbsp;</span><span class="val f">0</span>
+            <span style="color:var(--muted);font-size:.78rem">&nbsp;(NOT aplicado al resultado completo del OR)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label blue">PASO 5 — Resolver el AND final</div>
+        <div class="subst">
+          <div class="line">
+            <span class="label">(x₁∧x̄₂) ∧ ‾(x₁∨x̄₃) &nbsp;=&nbsp; 0 ∧ 0 &nbsp;=&nbsp;</span><span class="val f">0</span>
+            <span style="color:var(--muted);font-size:.78rem">&nbsp;(AND: ambos operandos son 0, resultado 0)</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="result-box no"><span class="icon">✖</span> Resultado: <code style="font-family:var(--mono)">(x₁∧x̄₂) ∧ ‾(x₁∨x̄₃) = <strong>0</strong> (FALSO)</code></div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════════════
+     EJERCICIO 3  (40%)
+═══════════════════════════════════════════════════════ -->
+<div class="ex">
+  <div class="ex-header">
+    <div class="ex-num e3">E3</div>
+    <div class="ex-title">Circuitos combinatorios a partir de expresiones booleanas</div>
+    <div class="ex-pct">40 %</div>
+  </div>
+  <div class="ex-body">
+
+    <!-- 3a -->
+    <div class="sub-ex">
+      <div class="sub-ex-title">Expresión a) &nbsp; ( x̄₁ ∨ x̄₂ ) ∧ x₃</div>
+      <div class="formula yellow">( x̄₁ ∨ x̄₂ ) ∧ x₃</div>
+
+      <div class="step">
+        <div class="step-label yellow">PASO 1 — Listar todas las sub-expresiones booleanas (de menor a mayor)</div>
+        <div class="substeps">
+          <h4>Sub-expresiones en orden de construcción</h4>
+          <ul class="substep-list">
+            <li>① x₁ &nbsp;<span class="arrow">→</span> entrada directa</li>
+            <li>② x₂ &nbsp;<span class="arrow">→</span> entrada directa</li>
+            <li>③ x₃ &nbsp;<span class="arrow">→</span> entrada directa</li>
+            <li>④ x̄₁ &nbsp;<span class="arrow">→</span> compuerta NOT aplicada a x₁</li>
+            <li>⑤ x̄₂ &nbsp;<span class="arrow">→</span> compuerta NOT aplicada a x₂</li>
+            <li>⑥ x̄₁ ∨ x̄₂ &nbsp;<span class="arrow">→</span> compuerta OR con entradas x̄₁ y x̄₂</li>
+            <li>⑦ (x̄₁ ∨ x̄₂) ∧ x₃ &nbsp;<span class="arrow">→</span> compuerta AND final</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label yellow">PASO 2 — Construir el circuito combinatorio</div>
+        <div class="circuit">
+          <svg viewBox="0 0 580 200" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+            <!-- wires color -->
+            <style>
+              .wire{stroke:#4fffb0;stroke-width:1.5;fill:none;opacity:.7}
+              .wire2{stroke:#64b5f6;stroke-width:1.5;fill:none;opacity:.7}
+              .wire3{stroke:#ffcc02;stroke-width:1.5;fill:none;opacity:.7}
+              .gate{fill:#13161e;stroke:#4fffb0;stroke-width:1.5}
+              .lbl{fill:#e8eaf0;font-family:'JetBrains Mono',monospace;font-size:12px}
+              .lbl2{fill:#64b5f6;font-family:'JetBrains Mono',monospace;font-size:11px}
+              .lbl3{fill:#ffcc02;font-family:'JetBrains Mono',monospace;font-size:11px}
+              .out{fill:#4fffb0;font-family:'JetBrains Mono',monospace;font-size:12px;font-weight:700}
+            </style>
+
+            <!-- INPUTS labels -->
+            <text x="18" y="58" class="lbl">x₁</text>
+            <text x="18" y="108" class="lbl">x₂</text>
+            <text x="18" y="158" class="lbl">x₃</text>
+
+            <!-- wires to NOTs -->
+            <line x1="40" y1="55" x2="90" y2="55" class="wire"/>
+            <line x1="40" y1="105" x2="90" y2="105" class="wire"/>
+
+            <!-- NOT gate x1 (triangle + circle) -->
+            <polygon points="90,42 120,55 90,68" class="gate"/>
+            <circle cx="124" cy="55" r="4" class="gate"/>
+            <text x="96" y="59" class="lbl2">¬</text>
+
+            <!-- NOT gate x2 -->
+            <polygon points="90,92 120,105 90,118" class="gate"/>
+            <circle cx="124" cy="105" r="4" class="gate"/>
+            <text x="96" y="109" class="lbl2">¬</text>
+
+            <!-- wires NOT output to OR -->
+            <line x1="128" y1="55" x2="200" y2="70" class="wire2"/>
+            <line x1="128" y1="105" x2="200" y2="90" class="wire2"/>
+
+            <!-- OR gate -->
+            <!-- body -->
+            <path d="M200,60 Q230,55 260,80 Q230,105 200,100 Q215,80 200,60Z" class="gate"/>
+            <text x="215" y="84" class="lbl2" text-anchor="middle">∨</text>
+
+            <!-- wire x3 direct to AND -->
+            <line x1="40" y1="155" x2="340" y2="135" class="wire3"/>
+            <text x="300" y="129" class="lbl3" font-size="10">x₃</text>
+
+            <!-- wire OR output to AND -->
+            <line x1="260" y1="80" x2="340" y2="100" class="wire2"/>
+
+            <!-- AND gate -->
+            <rect x="340" y="87" width="30" height="36" rx="0" class="gate" style="stroke:#ffcc02"/>
+            <path d="M340,87 L340,123 L358,123 Q380,123 380,105 Q380,87 358,87 Z" class="gate" style="stroke:#ffcc02"/>
+            <text x="350" y="109" class="lbl3">∧</text>
+
+            <!-- output wire -->
+            <line x1="380" y1="105" x2="430" y2="105" class="wire3"/>
+            <text x="435" y="110" class="out">Y</text>
+
+            <!-- x̄₁ label -->
+            <text x="130" y="49" class="lbl2">x̄₁</text>
+            <!-- x̄₂ label -->
+            <text x="130" y="119" class="lbl2">x̄₂</text>
+            <!-- OR output label -->
+            <text x="262" y="75" class="lbl2" font-size="10">x̄₁∨x̄₂</text>
+
+            <!-- Description -->
+            <text x="10" y="190" fill="#7a8099" font-family="JetBrains Mono,monospace" font-size="10">Y = (x̄₁ ∨ x̄₂) ∧ x₃ &nbsp;|&nbsp; Compuertas: NOT×2, OR×1, AND×1</text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label yellow">RESUMEN DE COMPUERTAS USADAS</div>
+        <div class="step-content">
+          <table style="width:auto;margin-top:.5rem">
+            <thead>
+              <tr><th>Compuerta</th><th>Entradas</th><th>Salida</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>NOT</td><td>x₁</td><td class="v">x̄₁</td></tr>
+              <tr><td>NOT</td><td>x₂</td><td class="v">x̄₂</td></tr>
+              <tr><td>OR</td><td>x̄₁, x̄₂</td><td class="v">x̄₁ ∨ x̄₂</td></tr>
+              <tr><td>AND</td><td>(x̄₁ ∨ x̄₂), x₃</td><td class="v">(x̄₁ ∨ x̄₂) ∧ x₃</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <!-- 3b -->
+    <div class="sub-ex">
+      <div class="sub-ex-title">Expresión b) &nbsp; ( x₁ ∧ x̄₂ ) ∧ <span style="text-decoration:overline">(x₁ ⊕ x̄₃)</span></div>
+      <div class="formula yellow">( x₁ ∧ x̄₂ ) ∧ ‾(x₁ ⊕ x̄₃)</div>
+
+      <div class="step">
+        <div class="step-label yellow">PASO 1 — Listar todas las sub-expresiones booleanas</div>
+        <div class="substeps">
+          <h4>Sub-expresiones en orden de construcción</h4>
+          <ul class="substep-list">
+            <li>① x₁ &nbsp;<span class="arrow">→</span> entrada directa</li>
+            <li>② x₂ &nbsp;<span class="arrow">→</span> entrada directa</li>
+            <li>③ x₃ &nbsp;<span class="arrow">→</span> entrada directa</li>
+            <li>④ x̄₂ &nbsp;<span class="arrow">→</span> compuerta NOT aplicada a x₂</li>
+            <li>⑤ x̄₃ &nbsp;<span class="arrow">→</span> compuerta NOT aplicada a x₃</li>
+            <li>⑥ x₁ ∧ x̄₂ &nbsp;<span class="arrow">→</span> compuerta AND con x₁ y x̄₂</li>
+            <li>⑦ x₁ ⊕ x̄₃ &nbsp;<span class="arrow">→</span> compuerta XOR con x₁ y x̄₃</li>
+            <li>⑧ ‾(x₁ ⊕ x̄₃) &nbsp;<span class="arrow">→</span> compuerta NOT aplicada al resultado del XOR (barra larga)</li>
+            <li>⑨ (x₁ ∧ x̄₂) ∧ ‾(x₁ ⊕ x̄₃) &nbsp;<span class="arrow">→</span> compuerta AND final</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label yellow">NOTA SOBRE XOR NEGADO: ‾(x₁ ⊕ x̄₃)</div>
+        <div class="step-content" style="font-size:.85rem;color:var(--muted)">
+          La barra larga encima del XOR lo niega: primero se calcula el XOR, luego se aplica NOT al resultado.
+          Esto equivale a una compuerta <strong>XNOR</strong>, que da 1 cuando ambas entradas son <strong>iguales</strong>.
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label yellow">PASO 2 — Construir el circuito combinatorio</div>
+        <div class="circuit">
+          <svg viewBox="0 0 700 250" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:auto">
+            <style>
+              .wg{stroke:#4fffb0;stroke-width:1.5;fill:none;opacity:.8}
+              .wb{stroke:#64b5f6;stroke-width:1.5;fill:none;opacity:.8}
+              .wy{stroke:#ffcc02;stroke-width:1.5;fill:none;opacity:.8}
+              .wp{stroke:#cf9fff;stroke-width:1.5;fill:none;opacity:.8}
+              .wr{stroke:#ff6b6b;stroke-width:1.5;fill:none;opacity:.8}
+              .gateS{fill:#13161e;stroke:#4fffb0;stroke-width:1.5}
+              .gateB{fill:#13161e;stroke:#64b5f6;stroke-width:1.5}
+              .gateY{fill:#13161e;stroke:#ffcc02;stroke-width:1.5}
+              .gateP{fill:#13161e;stroke:#cf9fff;stroke-width:1.5}
+              .gateR{fill:#13161e;stroke:#ff6b6b;stroke-width:1.5}
+              .t{fill:#e8eaf0;font-family:'JetBrains Mono',monospace;font-size:11px}
+              .tg{fill:#4fffb0;font-family:'JetBrains Mono',monospace;font-size:11px}
+              .tb{fill:#64b5f6;font-family:'JetBrains Mono',monospace;font-size:11px}
+              .ty{fill:#ffcc02;font-family:'JetBrains Mono',monospace;font-size:11px}
+              .tp{fill:#cf9fff;font-family:'JetBrains Mono',monospace;font-size:11px}
+              .tr{fill:#ff6b6b;font-family:'JetBrains Mono',monospace;font-size:11px}
+            </style>
+
+            <!-- Input labels -->
+            <text x="10" y="48" class="t">x₁</text>
+            <text x="10" y="108" class="t">x₂</text>
+            <text x="10" y="178" class="t">x₃</text>
+
+            <!-- Input wires -->
+            <line x1="32" y1="45" x2="80" y2="45" class="wg"/>
+            <line x1="32" y1="105" x2="80" y2="105" class="wg"/>
+            <line x1="32" y1="175" x2="80" y2="175" class="wg"/>
+
+            <!-- NOT x2 -->
+            <polygon points="80,93 108,105 80,117" class="gateB"/>
+            <circle cx="112" cy="105" r="4" class="gateB"/>
+            <text x="86" y="109" class="tb">¬</text>
+            <text x="118" y="101" class="tb">x̄₂</text>
+
+            <!-- NOT x3 -->
+            <polygon points="80,163 108,175 80,187" class="gateB"/>
+            <circle cx="112" cy="175" r="4" class="gateB"/>
+            <text x="86" y="179" class="tb">¬</text>
+            <text x="118" y="171" class="tb">x̄₃</text>
+
+            <!-- x1 split node -->
+            <circle cx="52" cy="45" r="3.5" fill="#4fffb0"/>
+            <!-- x1 to AND (upper) -->
+            <line x1="52" y1="45" x2="52" y2="72" class="wg"/>
+            <line x1="52" y1="72" x2="192" y2="72" class="wg"/>
+            <!-- x1 to XOR (lower) -->
+            <line x1="52" y1="72" x2="52" y2="188" class="wg"/>
+            <line x1="52" y1="188" x2="290" y2="188" class="wg"/>
+
+            <!-- wire x̄₂ to AND -->
+            <line x1="116" y1="105" x2="192" y2="88" class="wb"/>
+
+            <!-- AND gate 1: x₁ ∧ x̄₂ -->
+            <path d="M192,62 L192,96 L210,96 Q234,96 234,79 Q234,62 210,62 Z" class="gateS"/>
+            <text x="202" y="83" class="tg">∧</text>
+            <text x="236" y="72" class="tg" font-size="9">x₁∧x̄₂</text>
+
+            <!-- wire x̄₃ to XOR -->
+            <line x1="116" y1="175" x2="290" y2="205" class="wb"/>
+
+            <!-- XOR gate: x₁ ⊕ x̄₃ -->
+            <path d="M288,176 Q302,171 330,190 Q302,209 288,204 Q303,190 288,176Z" class="gateP"/>
+            <path d="M285,176 Q297,190 285,204" stroke="#cf9fff" stroke-width="1.5" fill="none"/>
+            <text x="303" y="194" class="tp">⊕</text>
+            <text x="332" y="182" class="tp" font-size="9">x₁⊕x̄₃</text>
+
+            <!-- wire XOR → NOT -->
+            <line x1="332" y1="190" x2="358" y2="190" class="wp"/>
+
+            <!-- NOT after XOR -->
+            <polygon points="358,178 386,190 358,202" class="gateR"/>
+            <circle cx="390" cy="190" r="4" class="gateR"/>
+            <text x="364" y="194" class="tr">¬</text>
+            <text x="396" y="183" class="tr" font-size="9">‾(x₁⊕x̄₃)</text>
+
+            <!-- wires to final AND -->
+            <line x1="234" y1="79" x2="455" y2="118" class="wg"/>
+            <line x1="394" y1="190" x2="455" y2="135" class="wr"/>
+
+            <!-- Final AND gate -->
+            <path d="M455,108 L455,145 L473,145 Q498,145 498,126 Q498,108 473,108 Z" class="gateY"/>
+            <text x="465" y="130" class="ty">∧</text>
+
+            <!-- output wire -->
+            <line x1="498" y1="126" x2="560" y2="126" class="wy"/>
+            <text x="564" y="131" class="ty" font-weight="700" font-size="14">Y</text>
+
+            <!-- Description -->
+            <text x="10" y="235" fill="#7a8099" font-family="JetBrains Mono,monospace" font-size="10">
+              Y = (x₁ ∧ x̄₂) ∧ ‾(x₁ ⊕ x̄₃)  |  Compuertas: NOT×3, AND×2, XOR×1
+            </text>
+          </svg>
+        </div>
+      </div>
+
+      <div class="step">
+        <div class="step-label yellow">RESUMEN DE COMPUERTAS USADAS</div>
+        <div class="step-content">
+          <table style="width:auto;margin-top:.5rem">
+            <thead>
+              <tr><th>Compuerta</th><th>Entradas</th><th>Salida</th></tr>
+            </thead>
+            <tbody>
+              <tr><td>NOT</td><td>x₂</td><td class="v">x̄₂</td></tr>
+              <tr><td>NOT</td><td>x₃</td><td class="v">x̄₃</td></tr>
+              <tr><td>AND</td><td>x₁, x̄₂</td><td class="v">x₁ ∧ x̄₂</td></tr>
+              <tr><td>XOR</td><td>x₁, x̄₃</td><td style="color:#cf9fff;font-weight:700">x₁ ⊕ x̄₃</td></tr>
+              <tr><td>NOT</td><td>x₁ ⊕ x̄₃</td><td class="f">‾(x₁ ⊕ x̄₃)</td></tr>
+              <tr><td>AND</td><td>(x₁ ∧ x̄₂), ‾(x₁ ⊕ x̄₃)</td><td class="v">Y (salida final)</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+</div>
+
+<!-- FOOTER -->
+<div style="text-align:center;padding:2rem 0;color:var(--muted);font-family:var(--mono);font-size:.75rem;border-top:1px solid var(--border);margin-top:2rem">
+  Matemática Computacional · Universidad Gerardo Barrios · 2026<br>
+  <span style="color:var(--accent)">5 ejercicios resueltos paso a paso sin omisiones</span>
+</div>
+
+</div><!-- /page -->
+</body>
+</html>
